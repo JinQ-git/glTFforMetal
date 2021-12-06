@@ -1,4 +1,5 @@
 import Foundation
+import simd
 
 public struct glTF: Decodable
 {
@@ -38,24 +39,39 @@ public struct glTF: Decodable
                 //     case uint   = 5125
                 // }
                 
-                public let bufferView: Int    // The index of the buffer view with sparse indicies.
-                                              // The referenced buffer view "MUST NOT" have its `target` or `byteStride` properties defined.
-                                              // The buffer view and the optional `byteOffset` "MUST" be aligned to the `componentType` byte length.
-                public let byteOffset: Int?   // The offset relative to the start of the buffer view in bytes. (default: 0)
-                public let componentType: Int // The indices data type. ( ubyte, ushort, uint )
+                public let bufferView: Int         // The index of the buffer view with sparse indicies.
+                                                   // The referenced buffer view "MUST NOT" have its `target` or `byteStride` properties defined.
+                                                   // The buffer view and the optional `byteOffset` "MUST" be aligned to the `componentType` byte length.
+                public let _byteOffset: Int?       // The offset relative to the start of the buffer view in bytes. (default: 0)
+                public let componentType: Int      // The indices data type. ( ubyte, ushort, uint )
                 // MARK: Not Support `Extensions` & `Extras` Properties
                 // let extensions: extension? = nil // JSON object with extension-specific objects.
                 // let extras: extras? = nil        // Application-specific data.
+                
+                enum CodingKeys: String, CodingKey {
+                    case bufferView
+                    case _byteOffset = "byteOffset"
+                    case componentType
+                }
+                
+                public var byteOffset: Int { get { return _byteOffset ?? 0 } }
             }
             
             public struct Values: Decodable
             {
                 public let bufferView: Int  // The index of the bufferView with sparse indicies.
                                             // The referenced buffer view "MUST NOT" have its `target` or `byteStride` properties defined.
-                public let byteOffset: Int? // The offset relative to the start of the bufferView in bytes. (default: 0)
+                public let _byteOffset: Int? // The offset relative to the start of the bufferView in bytes. (default: 0)
                 // MARK: Not Support `Extensions` & `Extras` Properties
                 // let extensions: extension? = nil // JSON object with extension-specific objects.
                 // let extras: extras? = nil        // Application-specific data.
+                
+                enum CodingKeys: String, CodingKey {
+                    case bufferView
+                    case _byteOffset = "byteOffset"
+                }
+                
+                public var byteOffset: Int { get { return _byteOffset ?? 0 } }
             }
             
             public let count: Int       // Number of devicating accessor values stored int the sparse array.
@@ -69,19 +85,35 @@ public struct glTF: Decodable
             // let extras: extras? = nil        // Application-specific data.
         }
         
-        public let bufferView: Int?   // The index of the bufferView.
-        public let byteOffset: Int?   // The offset relative to the start of the buffer view in bytes. (default:0)
-        public let componentType: Int // The datatype of the accessor's components. (byte, ubyte, short, ushort, uint, float)
-        public let normalized: Bool?  // Specifies whethere integer data values are normalized before usage. (default:false)
-        public let count: Int         // The number of elements referenced by this accessor.
-        public let type: String       // Specifies if the accessor's elements are scalars, vectors, or matrices.
-        public let max: [Double]?     // Maximum value of each component in this accessor.
-        public let min: [Double]?     // Minimum value of each component in this accessor.
-        public let sparse: Sparse?    // Sparse storage of elements that deviate from their initialization value.
-        public let name: String?      // The user-defined name of this object.
+        public let bufferView: Int?         // The index of the bufferView.
+        public let _byteOffset: Int?        // The offset relative to the start of the buffer view in bytes. (default:0)
+        public let componentType: Int       // The datatype of the accessor's components. (byte, ubyte, short, ushort, uint, float)
+        public let _normalized: Bool?       // Specifies whethere integer data values are normalized before usage. (default:false)
+        public let count: Int               // The number of elements referenced by this accessor.
+        public let type: String             // Specifies if the accessor's elements are scalars, vectors, or matrices.
+        public let max: [Float]?            // Maximum value of each component in this accessor.
+        public let min: [Float]?            // Minimum value of each component in this accessor.
+        public let sparse: Sparse?          // Sparse storage of elements that deviate from their initialization value.
+        public let name: String?            // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
+        
+        enum CodingKeys: String, CodingKey {
+            case bufferView
+            case _byteOffset = "byteOffset"
+            case componentType
+            case _normalized = "normalized"
+            case count
+            case type
+            case max
+            case min
+            case sparse
+            case name
+        }
+        
+        public var byteOffset: Int { get { return _byteOffset ?? 0 } }
+        public var normalized: Bool { get { return _normalized ?? false } }
     }
     
     public struct Animation: Decodable
@@ -98,12 +130,12 @@ public struct glTF: Decodable
                 //     case weights     = "weights"
                 // }
                 
-                public let node: Int?   // The index of the node to animate.
-                                        // When undefined, the animated object "MAY" be defined by an extension.
-                public let path: String // The name of the node's TRS property to animate, or the `"weights"` of the Morph Targets it instantiates.
-                                        // For the `"translation"` property, the values that are provided by the sampler are the translation along X, Y, and Z axes.
-                                        // For the `"rotation"` property, the values are a quaternion in the order (x, y, z, w), where w is the scalar.
-                                        // For the `"scale"` property, the values are the scaling factors along the X, y, and Z axes.
+                public let node: Int?     // The index of the node to animate.
+                                          // When undefined, the animated object "MAY" be defined by an extension.
+                public let path: String   // The name of the node's TRS property to animate, or the `"weights"` of the Morph Targets it instantiates.
+                                          // For the `"translation"` property, the values that are provided by the sampler are the translation along X, Y, and Z axes.
+                                          // For the `"rotation"` property, the values are a quaternion in the order (x, y, z, w), where w is the scalar.
+                                          // For the `"scale"` property, the values are the scaling factors along the X, y, and Z axes.
                 // MARK: Not Support `Extensions` & `Extras` Properties
                 // let extensions: extension? = nil // JSON object with extension-specific objects.
                 // let extras: extras? = nil        // Application-specific data.
@@ -125,12 +157,21 @@ public struct glTF: Decodable
             //     case cubicSpline = "CUBICSPLINE"
             // }
             
-            public let input: Int             // The index of an accessor containing keyframe timestamps.
-            public let interpolation: String? // Interpolation algorithm. (default: "LINEAR")
-            public let output: Int            // The index of an accessor containing keyframe output values.
+            public let input: Int              // The index of an accessor containing keyframe timestamps.
+            public let _interpolation: String? // Interpolation algorithm. (default: "LINEAR")
+            public let output: Int             // The index of an accessor containing keyframe output values.
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey
+            {
+                case input
+                case _interpolation = "interpolation"
+                case output
+            }
+            
+            public var interpolation: String { get { return _interpolation ?? "LINEAR" } }
         }
         
         public let channels: [Channel] // An array of animation channels.
@@ -169,15 +210,26 @@ public struct glTF: Decodable
         //     case elementArrayBuffer = 34963
         // }
         
-        public let buffer: Int      // The index of the buffer.
-        public let byteOffset: Int? // The offset into the buffer in bytes. (default: 0)
-        public let byteLength: Int  // The length of the bufferView in bytes.
-        public let byteStride: Int? // The stride, in bytes.
-        public let target: Int?     // The hint representing the intended GPU buffer type to use with this buffer view.
-        public let name: String?    // The user-defined name of this object.
+        public let buffer: Int         // The index of the buffer.
+        public let _byteOffset: Int?   // The offset into the buffer in bytes. (default: 0)
+        public let byteLength: Int     // The length of the bufferView in bytes.
+        public let byteStride: Int?    // The stride, in bytes.
+        public let target: Int?        // The hint representing the intended GPU buffer type to use with this buffer view.
+        public let name: String?       // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
+        
+        enum CodingKeys: String, CodingKey {
+            case buffer
+            case _byteOffset = "byteOffset"
+            case byteLength
+            case byteStride
+            case target
+            case name
+        }
+        
+        public var byteOffset: Int { get { return _byteOffset ?? 0 } }
     }
     
     public struct Camera: Decodable
@@ -190,16 +242,16 @@ public struct glTF: Decodable
         
         public struct Orthographic: Decodable
         {
-            public let xmag: Double  // The floating-point horizontal magnification of the view.
-                                     // This value "MUST NOT" be equal to zero.
-                                     // This value "SHOULD NOT" be negative.
-            public let ymag: Double  // The floating-point vertical magnification of the view.
-                                     // This value "MUST NOT" be equal to zero.
-                                     // This value "SHOULD NOT" be negative.
-            public let zfar: Double  // The floating-point distance to the far clipping plane.
-                                     // This value "MUST NOT" be equal to zero.
-                                     // `zfar` "MUST" be greater than `znear`.
-            public let znear: Double // The floating-point distance to the near clipping plane.
+            public let xmag: Float  // The floating-point horizontal magnification of the view.
+                                    // This value "MUST NOT" be equal to zero.
+                                    // This value "SHOULD NOT" be negative.
+            public let ymag: Float  // The floating-point vertical magnification of the view.
+                                    // This value "MUST NOT" be equal to zero.
+                                    // This value "SHOULD NOT" be negative.
+            public let zfar: Float  // The floating-point distance to the far clipping plane.
+                                    // This value "MUST NOT" be equal to zero.
+                                    // `zfar` "MUST" be greater than `znear`.
+            public let znear: Float // The floating-point distance to the near clipping plane.
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
@@ -207,14 +259,14 @@ public struct glTF: Decodable
         
         public struct Perspective: Decodable
         {
-            public let aspectRatio: Double?  // The floating-point aspect ratio of the field of view.
-                                             // When undefined, the aspect ratio of the rendering viewport "MUST" be used.
-            public let yfov: Double          // The floating-point vertical field of view in radians.
-                                             // This value "SHOULD" be less than pi(π).
-            public let zfar: Double?         // The floating-point distance to the far clipping plane.
-                                             // When defined, `zfar` "MUST" be greater than `znear`.
-                                             // If `zfar` is undefined, client implementations "SHOULD" use infinite projection matrix.
-            public let znear: Double         // The floating-point distance to the near clipping plane.
+            public let aspectRatio: Float? // The floating-point aspect ratio of the field of view.
+                                           // When undefined, the aspect ratio of the rendering viewport "MUST" be used.
+            public let yfov: Float         // The floating-point vertical field of view in radians.
+                                           // This value "SHOULD" be less than pi(π).
+            public let zfar: Float?        // The floating-point distance to the far clipping plane.
+                                           // When defined, `zfar` "MUST" be greater than `znear`.
+                                           // If `zfar` is undefined, client implementations "SHOULD" use infinite projection matrix.
+            public let znear: Float        // The floating-point distance to the near clipping plane.
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
@@ -253,10 +305,17 @@ public struct glTF: Decodable
     public struct TextureInfo: Decodable
     {
         public let index: Int     // The index of the texture.
-        public let texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
+        public let _texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
+        
+        enum CodingKeys: String, CodingKey {
+            case index
+            case _texCoord = "texCoord"
+        }
+        
+        public var texCoord: Int { get { return _texCoord ?? 0 } }
     }
     
     public struct Material: Decodable
@@ -270,34 +329,74 @@ public struct glTF: Decodable
         
         public struct PBRMetallicRoughness: Decodable
         {
-            public let baseColorFactor: [Double]? // number[4] // The factors for the base color of the material. (default: [1, 1, 1, 1])
+            public let _baseColorFactor: [Float]? // number[4] // The factors for the base color of the material. (default: [1, 1, 1, 1])
             public let baseColorTexture: TextureInfo?          // The base color texture.
-            public let metallicFactor: Double?                 // The factor for the metalness of the material. (default: 1)
-            public let roughnessFactor: Double?                // The factor for the roughness of the material. (default: 1)
+            public let _metallicFactor: Float?                 // The factor for the metalness of the material. (default: 1)
+            public let _roughnessFactor: Float?                // The factor for the roughness of the material. (default: 1)
             public let metallicRoughnessTexture: TextureInfo?  // The metallic-roughness texture.
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey {
+                case _baseColorFactor = "baseColorFactor"
+                case baseColorTexture
+                case _metallicFactor = "metallicFactor"
+                case _roughnessFactor = "roughnessFactor"
+                case metallicRoughnessTexture
+            }
+            
+            public var baseColorFactor: simd_float4 {
+                get {
+                    if let bcf = _baseColorFactor {
+                        return simd_float4.init(Float(bcf[0]), Float(bcf[1]), Float(bcf[2]), Float(bcf[3]))
+                    }
+                    else {
+                        return simd_float4.init(repeating: 1.0)
+                    }
+                }
+            }
+            
+            public var metallicFactor: Float { get { return _metallicFactor ?? 1.0 } }
+            public var roughnessFactor: Float { get { return _roughnessFactor ?? 1.0 } }
         }
         
         public struct NormalTextureInfo: Decodable
         {
-            public let index: Int     // The index of the texture.
-            public let texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
-            public let scale: Double? // The scalar parameter applied to each normal vector of the normal texture. (default: 1)
+            public let index: Int      // The index of the texture.
+            public let _texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
+            public let _scale: Float?  // The scalar parameter applied to each normal vector of the normal texture. (default: 1)
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey {
+                case index
+                case _texCoord = "texCoord"
+                case _scale = "scale"
+            }
+            
+            public var texCoord: Int { get { return _texCoord ?? 0 } }
+            public var scale: Float { get { return _scale ?? 1.0 } }
         }
         
         public struct OcclusionTextureInfo: Decodable
         {
             public let index: Int        // The index of the texture.
-            public let texCoord: Int?    // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
-            public let strength: Double? // A scalar multiplier controlling the amount of occlusion applied. (default: 1)
+            public let _texCoord: Int?   // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
+            public let _strength: Float? // A scalar multiplier controlling the amount of occlusion applied. (default: 1)
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey {
+                case index
+                case _texCoord = "texCoord"
+                case _strength = "strength"
+            }
+            
+            public var texCoord: Int { get { return _texCoord ?? 0 } }
+            public var strength: Float { get { return _strength ?? 1.0 } }
         }
         
         public let name: String? // The user-defined name of this object.
@@ -310,10 +409,40 @@ public struct glTF: Decodable
         public let normalTexture: NormalTextureInfo?           // The tangent space normal texture.
         public let occlusionTexture: OcclusionTextureInfo?     // The occlusion texture.
         public let emissiveTexture: TextureInfo?               // The emissive texture.
-        public let emissiveFactor: [Double]? // number[3]      // The factors for the emissive color of the material. (default: [0, 0, 0])
-        public let alphaMode: String?                          // The alpha rendering mode of the material. (default: "OPAQUE")
-        public let alphaCutoff: Double?                        // The alpha cutoff value of the material. (default: 0.5)
-        public let doubleSided: Bool?                          // Specifies whether the material is double sided. (default: false)
+        public let _emissiveFactor: [Float]? // number[3]      // The factors for the emissive color of the material. (default: [0, 0, 0])
+        public let _alphaMode: String?                         // The alpha rendering mode of the material. (default: "OPAQUE")
+        public let _alphaCutoff: Float?                        // The alpha cutoff value of the material. (default: 0.5)
+        public let _doubleSided: Bool?                         // Specifies whether the material is double sided. (default: false)
+        
+        enum CodingKeys: String, CodingKey {
+            case name
+            case pbrMetallicRoughness
+            case normalTexture
+            case occlusionTexture
+            case emissiveTexture
+            case _emissiveFactor = "emissiveFactor"
+            case _alphaMode = "alphaMode"
+            case _alphaCutoff = "alphaCutoff"
+            case _doubleSided = "doubleSided"
+        }
+        
+        public var emissiveFactor: simd_float3 {
+            get {
+                if let ef = _emissiveFactor {
+                    return simd_float3.init(ef[0], ef[1], ef[2])
+                }
+                else {
+                    return simd_float3.init()
+                }
+            }
+        }
+        public var alphaMode: String { get { return _alphaMode ?? "OPAQUE" } }
+        public var alphaCutoff: Float { get { return _alphaCutoff ?? 0.5 } }
+        public var doubleSided: Bool { get { return _doubleSided ?? false } }
+        
+        public static func getDefaultPBRMetallicRoughness() -> PBRMetallicRoughness {
+            return PBRMetallicRoughness.init(_baseColorFactor: nil, baseColorTexture: nil, _metallicFactor: nil, _roughnessFactor: nil, metallicRoughnessTexture: nil)
+        }
     }
     
     public struct Mesh: Decodable
@@ -348,16 +477,27 @@ public struct glTF: Decodable
             public let attributes: [String:Int] // A plain JSON object, where each key corresponds to a mesh attribute semantic and each value is the index of the accessor containing attribute's data.
             public let indices: Int?            // The index of the accessor that contains the vertex indices.
             public let material: Int?           // The index of the material to apply to this primitive when rendering.
-            public let mode: Int?               // The topology type of primitives to render. (default: 4)
+            public let _mode: Int?              // The topology type of primitives to render. (default: 4)
             public let targets: [[String:Int]]? // An array of morph targets.
                                                 // Each target in the `targets` array is a plain JSON object mapping a primitive attribute to an accessor containing morph target displacement data (deltas).
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey {
+                case attributes
+                case indices
+                case material
+                case _mode = "mode"
+                case targets
+            }
+            
+            public var mode: Int { get { return _mode ?? 4 } }
+            //public var hasIndices: Bool { get { return indices != nil } }
         }
         
         public let primitives: [Primitive] // An array of primitives, each defining geometry to be rendered.
-        public let weights: [Double]?      // Array of weights to be applied to the morph targets.
+        public let weights: [Float]?       // Array of weights to be applied to the morph targets.
                                            // The number of array elements "MUST" match the number of morph targets.
         public let name: String?           // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
@@ -371,18 +511,82 @@ public struct glTF: Decodable
         public let camera: Int?                         // The index of the camera referenced by this node.
         public let children: [Int]?                     // The indices of this node's children.
         public let skin: Int?                           // The index of the skin referenced by this node.
-        public let matrix: [Double]?      // number[16] // A floating-point 4x4 transformation matrix stored in column-major order. (default: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
+        public let _matrix: [Float]?      // number[16] // A floating-point 4x4 transformation matrix stored in column-major order. (default: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
         public let mesh: Int?                           // The index of the mesh in this node.
-        public let rotation: [Double]?    // number[4]  // The node's unit guaternion rotation in the order (x, y, z, w), where w is the scalar. (default: [0, 0, 0, 1])
-        public let scale: [Double]?       // number[3]  // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes. (default: [1, 1, 1])
-        public let translation: [Double]? // number[3]  // The node's translation along the x, y, and z axes. (default: [0, 0, 0])
-        public let weights: [Double]?                   // The weights of the instantiated morph target.
+        public let _rotation: [Float]?    // number[4]  // The node's unit guaternion rotation in the order (x, y, z, w), where w is the scalar. (default: [0, 0, 0, 1])
+        public let _scale: [Float]?       // number[3]  // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes. (default: [1, 1, 1])
+        public let _translation: [Float]? // number[3]  // The node's translation along the x, y, and z axes. (default: [0, 0, 0])
+        public let weights: [Float]?                    // The weights of the instantiated morph target.
                                                         // The number of array elements "MUST" match the number of morph targets of the referenced mesh.
                                                         // When defined, `mesh` "MUST" also be defined.
-        public let name: String?                               // The user-defined name of this object.
+        public let name: String?                        // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
+        
+        enum CodingKeys: String, CodingKey {
+            case camera
+            case children
+            case skin
+            case _matrix = "matrix"
+            case mesh
+            case _rotation = "rotation"
+            case _scale = "scale"
+            case _translation = "translation"
+            case weights
+            case name
+        }
+        
+        public var matrix: simd_float4x4 {
+            get {
+                if let m = _matrix {
+                    return simd_float4x4.init(columns: (
+                        simd_float4.init( m[0], m[1], m[2], m[3]),
+                        simd_float4.init( m[4], m[5], m[6], m[7]),
+                        simd_float4.init( m[8], m[9], m[10], m[11]),
+                        simd_float4.init( m[12], m[13], m[14], m[15])
+                    ) )
+                }
+                else {
+                    return simd_float4x4.init() // Identity
+                }
+            }
+        }
+        
+        public var rotation: simd_quatf {
+            get {
+                if let r = _rotation {
+                    return simd_quatf.init(ix: r[0], iy: r[1], iz: r[2], r: r[3])
+                }
+                else {
+                    return simd_quatf.init()
+                    //return simd_quatf.init(ix: 0, iy: 0, iz: 0, r: 1)
+                }
+            }
+        }
+        
+        public var scale: simd_float3 {
+            get {
+                if let s = _scale {
+                    return simd_float3.init( s[0], s[1], s[2] )
+                }
+                else {
+                    return simd_float3.init(repeating: 1.0)
+                }
+            }
+        }
+        
+        public var translation: simd_float3 {
+            get {
+                if let t = _translation {
+                    return simd_float3.init( t[0], t[1], t[2] )
+                }
+                else {
+                    return simd_float3.init()
+                    // return simd_float3.init(repeating: 0.0)
+                }
+            }
+        }
     }
     
     public struct Sampler: Decodable
@@ -412,12 +616,23 @@ public struct glTF: Decodable
         
         public let magFilter: Int? // Magnification filter.
         public let minFilter: Int? // Minification filter.
-        public let wrapS: Int?     // S(U) wrapping mode. (default: 10497)
-        public let wrapT: Int?     // T(V) wrapping mode. (default: 10497)
+        public let _wrapS: Int?    // S(U) wrapping mode. (default: 10497)
+        public let _wrapT: Int?    // T(V) wrapping mode. (default: 10497)
         public let name: String?   // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
+        
+        enum CodingKeys: String, CodingKey {
+            case magFilter
+            case minFilter
+            case _wrapS = "wrapS"
+            case _wrapT = "wrapT"
+            case name
+        }
+        
+        public var wrapS: Int { get { return _wrapS ?? 10497 } }
+        public var wrapT: Int { get { return _wrapS ?? 10497 } }
     }
     
     public struct Scene: Decodable
@@ -460,7 +675,7 @@ public struct glTF: Decodable
     public let extensionsRequired: [String]?
     public let accessors: [Accessor]?
     public let animations: [Animation]?
-    public let asset: Asset
+    public let asset: Asset // Required!!
     public let buffers: [Buffer]?
     public let bufferViews: [BufferView]?
     public let cameras: [Camera]?
@@ -487,20 +702,20 @@ public class glTFReader
         return try decoder.decode(glTF.self, from: data)
     }
     
-    public class func from(filePath path: String) throws -> glTF {
+    public class func from(filePath path: String, jsonDecoder:JSONDecoder? = nil) throws -> glTF {
         let data = try Data.init(contentsOf: URL(fileURLWithPath: path))
-        let decoder = JSONDecoder()
+        let decoder = jsonDecoder ?? JSONDecoder()
         
         return try decoder.decode(glTF.self, from: data)
     }
     
-    public class func from(jsonData data: Data) throws -> glTF {
-        let decoder = JSONDecoder()
+    public class func from(jsonData data: Data, jsonDecoder:JSONDecoder? = nil) throws -> glTF {
+        let decoder = jsonDecoder ?? JSONDecoder()
         return try decoder.decode(glTF.self, from: data)
     }
     
-    public class func from(jsonString str: String) throws -> glTF {
-        let decoder = JSONDecoder()
+    public class func from(jsonString str: String, jsonDecoder:JSONDecoder? = nil) throws -> glTF {
+        let decoder = jsonDecoder ?? JSONDecoder()
         return try decoder.decode(glTF.self, from: str.data(using: .utf8)!)
     }
 }
