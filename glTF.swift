@@ -92,7 +92,7 @@ public struct glTF: Decodable
         public let count: Int               // The number of elements referenced by this accessor.
         public let type: ElementType        // Specifies if the accessor's elements are scalars, vectors, or matrices.
         public let max: [Float]?            // Maximum value of each component in this accessor.
-        public let min: [Float]?           // Minimum value of each component in this accessor.
+        public let min: [Float]?            // Minimum value of each component in this accessor.
         public let sparse: Sparse?          // Sparse storage of elements that deviate from their initialization value.
         public let name: String?            // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
