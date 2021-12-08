@@ -7,7 +7,7 @@ public struct glTF: Decodable
     
     public struct Accessor: Decodable
     {
-        public enum DataType: Int, Decodable
+        public enum ComponentType: Int, Decodable
         {
             case byte   = 5120
             case ubyte  = 5121
@@ -17,7 +17,7 @@ public struct glTF: Decodable
             case float  = 5126
         }
         
-        public enum ElementType: String, Decodable
+        public enum DataType: String, Decodable
         {
             case scalar = "SCALAR"
             case vec2   = "VEC2"
@@ -32,21 +32,21 @@ public struct glTF: Decodable
         {
             public struct Indices: Decodable
             {
-                public enum DataType: Int, Decodable
+                public enum ComponentType: Int, Decodable
                 {
                     case ubyte  = 5121
                     case ushort = 5123
                     case uint   = 5125
                 }
                 
-                public let bufferView: Int         // The index of the buffer view with sparse indicies.
-                                                   // The referenced buffer view "MUST NOT" have its `target` or `byteStride` properties defined.
-                                                   // The buffer view and the optional `byteOffset` "MUST" be aligned to the `componentType` byte length.
-                public let _byteOffset: Int?       // The offset relative to the start of the buffer view in bytes. (default: 0)
-                public let componentType: DataType // The indices data type. ( ubyte, ushort, uint )
+                public let bufferView: Int              // The index of the buffer view with sparse indicies.
+                                                        // The referenced buffer view "MUST NOT" have its `target` or `byteStride` properties defined.
+                                                        // The buffer view and the optional `byteOffset` "MUST" be aligned to the `componentType` byte length.
+                public let _byteOffset: Int?            // The offset relative to the start of the buffer view in bytes. (default: 0)
+                public let componentType: ComponentType // The indices data type. ( ubyte, ushort, uint )
                 // MARK: Not Support `Extensions` & `Extras` Properties
-                // let extensions: extension? = nil // JSON object with extension-specific objects.
-                // let extras: extras? = nil        // Application-specific data.
+                // let extensions: extension? = nil     // JSON object with extension-specific objects.
+                // let extras: extras? = nil            // Application-specific data.
                 
                 enum CodingKeys: String, CodingKey {
                     case bufferView
@@ -85,19 +85,19 @@ public struct glTF: Decodable
             // let extras: extras? = nil        // Application-specific data.
         }
         
-        public let bufferView: Int?         // The index of the bufferView.
-        public let _byteOffset: Int?        // The offset relative to the start of the buffer view in bytes. (default:0)
-        public let componentType: DataType  // The datatype of the accessor's components. (byte, ubyte, short, ushort, uint, float)
-        public let _normalized: Bool?       // Specifies whethere integer data values are normalized before usage. (default:false)
-        public let count: Int               // The number of elements referenced by this accessor.
-        public let type: ElementType        // Specifies if the accessor's elements are scalars, vectors, or matrices.
-        public let max: [Float]?            // Maximum value of each component in this accessor.
-        public let min: [Float]?            // Minimum value of each component in this accessor.
-        public let sparse: Sparse?          // Sparse storage of elements that deviate from their initialization value.
-        public let name: String?            // The user-defined name of this object.
+        public let bufferView: Int?             // The index of the bufferView.
+        public let _byteOffset: Int?            // The offset relative to the start of the buffer view in bytes. (default:0)
+        public let componentType: ComponentType // The datatype of the accessor's components. (byte, ubyte, short, ushort, uint, float)
+        public let _normalized: Bool?           // Specifies whethere integer data values are normalized before usage. (default:false)
+        public let count: Int                   // The number of elements referenced by this accessor.
+        public let type: DataType               // Specifies if the accessor's elements are scalars, vectors, or matrices.
+        public let max: [Float]?                // Maximum value of each component in this accessor.
+        public let min: [Float]?                // Minimum value of each component in this accessor.
+        public let sparse: Sparse?              // Sparse storage of elements that deviate from their initialization value.
+        public let name: String?                // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
-        // let extensions: extension? = nil // JSON object with extension-specific objects.
-        // let extras: extras? = nil        // Application-specific data.
+        // let extensions: extension? = nil     // JSON object with extension-specific objects.
+        // let extras: extras? = nil            // Application-specific data.
         
         enum CodingKeys: String, CodingKey {
             case bufferView
@@ -508,85 +508,21 @@ public struct glTF: Decodable
     
     public struct Node: Decodable
     {
-        public let camera: Int?                         // The index of the camera referenced by this node.
-        public let children: [Int]?                     // The indices of this node's children.
-        public let skin: Int?                           // The index of the skin referenced by this node.
-        public let _matrix: [Float]?      // number[16] // A floating-point 4x4 transformation matrix stored in column-major order. (default: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
-        public let mesh: Int?                           // The index of the mesh in this node.
-        public let _rotation: [Float]?    // number[4]  // The node's unit guaternion rotation in the order (x, y, z, w), where w is the scalar. (default: [0, 0, 0, 1])
-        public let _scale: [Float]?       // number[3]  // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes. (default: [1, 1, 1])
-        public let _translation: [Float]? // number[3]  // The node's translation along the x, y, and z axes. (default: [0, 0, 0])
-        public let weights: [Float]?                    // The weights of the instantiated morph target.
-                                                        // The number of array elements "MUST" match the number of morph targets of the referenced mesh.
-                                                        // When defined, `mesh` "MUST" also be defined.
-        public let name: String?                        // The user-defined name of this object.
+        public let camera: Int?                        // The index of the camera referenced by this node.
+        public let children: [Int]?                    // The indices of this node's children.
+        public let skin: Int?                          // The index of the skin referenced by this node.
+        public let matrix: [Float]?      // number[16] // A floating-point 4x4 transformation matrix stored in column-major order. (default: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
+        public let mesh: Int?                          // The index of the mesh in this node.
+        public let rotation: [Float]?    // number[4]  // The node's unit guaternion rotation in the order (x, y, z, w), where w is the scalar. (default: [0, 0, 0, 1])
+        public let scale: [Float]?       // number[3]  // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes. (default: [1, 1, 1])
+        public let translation: [Float]? // number[3]  // The node's translation along the x, y, and z axes. (default: [0, 0, 0])
+        public let weights: [Float]?                   // The weights of the instantiated morph target.
+                                                       // The number of array elements "MUST" match the number of morph targets of the referenced mesh.
+                                                       // When defined, `mesh` "MUST" also be defined.
+        public let name: String?                       // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
-        
-        enum CodingKeys: String, CodingKey {
-            case camera
-            case children
-            case skin
-            case _matrix = "matrix"
-            case mesh
-            case _rotation = "rotation"
-            case _scale = "scale"
-            case _translation = "translation"
-            case weights
-            case name
-        }
-        
-        public var matrix: simd_float4x4 {
-            get {
-                if let m = _matrix {
-                    return simd_float4x4.init(columns: (
-                        simd_float4.init( m[0], m[1], m[2], m[3]),
-                        simd_float4.init( m[4], m[5], m[6], m[7]),
-                        simd_float4.init( m[8], m[9], m[10], m[11]),
-                        simd_float4.init( m[12], m[13], m[14], m[15])
-                    ) )
-                }
-                else {
-                    return simd_float4x4.init() // Identity
-                }
-            }
-        }
-        
-        public var rotation: simd_quatf {
-            get {
-                if let r = _rotation {
-                    return simd_quatf.init(ix: r[0], iy: r[1], iz: r[2], r: r[3])
-                }
-                else {
-                    return simd_quatf.init()
-                    //return simd_quatf.init(ix: 0, iy: 0, iz: 0, r: 1)
-                }
-            }
-        }
-        
-        public var scale: simd_float3 {
-            get {
-                if let s = _scale {
-                    return simd_float3.init( s[0], s[1], s[2] )
-                }
-                else {
-                    return simd_float3.init(repeating: 1.0)
-                }
-            }
-        }
-        
-        public var translation: simd_float3 {
-            get {
-                if let t = _translation {
-                    return simd_float3.init( t[0], t[1], t[2] )
-                }
-                else {
-                    return simd_float3.init()
-                    // return simd_float3.init(repeating: 0.0)
-                }
-            }
-        }
     }
     
     public struct Sampler: Decodable
@@ -691,6 +627,69 @@ public struct glTF: Decodable
     // MARK: Not Support `Extensions` & `Extras` Properties
     // let extensions: extension? = nil // JSON object with extension-specific objects
     // let extras: extras? = nil        // Application-specific data
+}
+
+extension glTF.Accessor
+{
+    public var SIZE_OF_COMPONENT: Int {
+        get {
+            switch componentType {
+            case .byte, .ubyte:
+                return 1
+            case .short, .ushort:
+                return 2
+            case .uint, .float:
+                return 4
+            }
+        }
+    }
+    
+    public var NUMBER_OF_COMPONENTS: Int {
+        get {
+            switch type {
+            case .scalar:
+                return 1
+            case .vec2:
+                return 2
+            case .vec3:
+                return 3
+            case .vec4:
+                return 4
+            case .mat2:
+                return 4
+            case .mat3:
+                return 9
+            case .mat4:
+                return 16
+            }
+        }
+    }
+    
+    public var SIZE_OF_ELEMENT: Int {
+        get {
+            let numComponent = SIZE_OF_COMPONENT // 1, 2, or 4
+            switch type {
+            case .scalar:
+                return numComponent
+            case .vec2:
+                return 2 * numComponent
+            case .vec3:
+                return 3 * numComponent
+            case .vec4:
+                return 4 * numComponent
+                
+            // NOTE! matrix type -> start of each column must be aligned to 4-byte boundaries.
+            // Only the 3 case require padding. (mat2 with 1-byte compoents, mat3 with 1-byte compoents, mat3 with 2-byte components
+                
+            case .mat2:
+                return numComponent == 1 ? 8 : 4 * numComponent
+            case .mat3:
+                return numComponent == 4 ? 9 * numComponent : 3 * 4 * numComponent
+            case .mat4:
+                return 16 * numComponent
+            }
+        }
+    }
 }
 
 public class glTFReader
