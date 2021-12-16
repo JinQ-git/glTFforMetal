@@ -449,7 +449,7 @@ public struct glTF: Decodable
     {
         public struct Primitive: Decodable
         {
-//            enum AttributeSemantic: String
+//            public enum AttributeSemantic: String, Decodable
 //            {
 //                case position  = "POSITION"
 //                case normal    = "NORMAL"
@@ -462,6 +462,7 @@ public struct glTF: Decodable
 //                case joints0   = "JOINTS_0"
 //                case weights0  = "WEIGHTS_0"
 //            }
+            public typealias AttributeSemantic = String
             
             public enum TopologyType: Int, Decodable
             {
@@ -474,12 +475,12 @@ public struct glTF: Decodable
                 case triangleFan   = 6
             }
             
-            public let attributes: [String:Int] // A plain JSON object, where each key corresponds to a mesh attribute semantic and each value is the index of the accessor containing attribute's data.
-            public let indices: Int?            // The index of the accessor that contains the vertex indices.
-            public let material: Int?           // The index of the material to apply to this primitive when rendering.
-            public let _mode: TopologyType?     // The topology type of primitives to render. (default: 4)
-            public let targets: [[String:Int]]? // An array of morph targets.
-                                                // Each target in the `targets` array is a plain JSON object mapping a primitive attribute to an accessor containing morph target displacement data (deltas).
+            public let attributes: [AttributeSemantic:Int] // A plain JSON object, where each key corresponds to a mesh attribute semantic and each value is the index of the accessor containing attribute's data.
+            public let indices: Int?                       // The index of the accessor that contains the vertex indices.
+            public let material: Int?                      // The index of the material to apply to this primitive when rendering.
+            public let _mode: TopologyType?                // The topology type of primitives to render. (default: 4)
+            public let targets: [[AttributeSemantic:Int]]? // An array of morph targets.
+                                                           // Each target in the `targets` array is a plain JSON object mapping a primitive attribute to an accessor containing morph target displacement data (deltas).
             // MARK: Not Support `Extensions` & `Extras` Properties
             // let extensions: extension? = nil // JSON object with extension-specific objects.
             // let extras: extras? = nil        // Application-specific data.
