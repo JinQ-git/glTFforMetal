@@ -1,5 +1,4 @@
 import Foundation
-import simd
 
 public struct glTF: Decodable
 {
@@ -91,8 +90,8 @@ public struct glTF: Decodable
         public let _normalized: Bool?           // Specifies whethere integer data values are normalized before usage. (default:false)
         public let count: Int                   // The number of elements referenced by this accessor.
         public let type: DataType               // Specifies if the accessor's elements are scalars, vectors, or matrices.
-        public let max: [Float]?                // Maximum value of each component in this accessor.
-        public let min: [Float]?                // Minimum value of each component in this accessor.
+        public let max: [Double]?               // Maximum value of each component in this accessor.
+        public let min: [Double]?               // Minimum value of each component in this accessor.
         public let sparse: Sparse?              // Sparse storage of elements that deviate from their initialization value.
         public let name: String?                // The user-defined name of this object.
         // MARK: Not Support `Extensions` & `Extras` Properties
@@ -302,22 +301,6 @@ public struct glTF: Decodable
         // let extras: extras? = nil        // Application-specific data.
     }
     
-    public struct TextureInfo: Decodable
-    {
-        public let index: Int     // The index of the texture.
-        public let _texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
-        // MARK: Not Support `Extensions` & `Extras` Properties
-        // let extensions: extension? = nil // JSON object with extension-specific objects.
-        // let extras: extras? = nil        // Application-specific data.
-        
-        enum CodingKeys: String, CodingKey {
-            case index
-            case _texCoord = "texCoord"
-        }
-        
-        public var texCoord: Int { get { return _texCoord ?? 0 } }
-    }
-    
     public struct Material: Decodable
     {
         public enum AlphaMode: String, Decodable
@@ -325,6 +308,22 @@ public struct glTF: Decodable
             case opaque = "OPAQUE"
             case mask   = "MASK"
             case blend  = "BLEND"
+        }
+        
+        public struct TextureInfo: Decodable
+        {
+            public let index: Int     // The index of the texture.
+            public let _texCoord: Int? // The set index of texture's TEXCOORD attribute used for texture coordinate mapping. (default: 0)
+            // MARK: Not Support `Extensions` & `Extras` Properties
+            // let extensions: extension? = nil // JSON object with extension-specific objects.
+            // let extras: extras? = nil        // Application-specific data.
+            
+            enum CodingKeys: String, CodingKey {
+                case index
+                case _texCoord = "texCoord"
+            }
+            
+            public var texCoord: Int { get { return _texCoord ?? 0 } }
         }
         
         public struct PBRMetallicRoughness: Decodable
@@ -346,13 +345,13 @@ public struct glTF: Decodable
                 case metallicRoughnessTexture
             }
             
-            public var baseColorFactor: simd_float4 {
+            public var baseColorFactor: [Float] {
                 get {
                     if let bcf = _baseColorFactor {
-                        return simd_float4.init(Float(bcf[0]), Float(bcf[1]), Float(bcf[2]), Float(bcf[3]))
+                        return bcf
                     }
                     else {
-                        return simd_float4.init(repeating: 1.0)
+                        return [1, 1, 1, 1]
                     }
                 }
             }
@@ -426,13 +425,13 @@ public struct glTF: Decodable
             case _doubleSided = "doubleSided"
         }
         
-        public var emissiveFactor: simd_float3 {
+        public var emissiveFactor: [Float] {
             get {
                 if let ef = _emissiveFactor {
-                    return simd_float3.init(ef[0], ef[1], ef[2])
+                    return ef
                 }
                 else {
-                    return simd_float3.init()
+                    return [0, 0, 0]
                 }
             }
         }
@@ -451,16 +450,16 @@ public struct glTF: Decodable
         {
 //            public enum AttributeSemantic: String, Decodable
 //            {
-//                case position  = "POSITION"
-//                case normal    = "NORMAL"
-//                case tangent   = "TANGENT"
-//                case texCoord0 = "TEXCOORD_0"
+//                case position  = "POSITION"    // float, VEC3
+//                case normal    = "NORMAL"      // float, VEC3
+//                case tangent   = "TANGENT"     // float, VEC4
+//                case texCoord0 = "TEXCOORD_0"  // [float, ubyte_norm, ushort_norm], VEC2
 //                case texCoord1 = "TEXCOORD_1"
 //                case texCoord2 = "TEXCOORD_2"
 //                case texCoord3 = "TEXCOORD_3"
-//                case color0    = "COLOR_0"
-//                case joints0   = "JOINTS_0"
-//                case weights0  = "WEIGHTS_0"
+//                case color0    = "COLOR_0"     // [float, ubyte_norm, ushort_norm], [VEC3, VEC4]
+//                case joints0   = "JOINTS_0"    // [ubyte, ushort], VEC4
+//                case weights0  = "WEIGHTS_0"   // [float, ubyte_norm, ushort_norm], VEC4
 //            }
             public typealias AttributeSemantic = String
             
@@ -603,8 +602,6 @@ public struct glTF: Decodable
         // let extensions: extension? = nil // JSON object with extension-specific objects.
         // let extras: extras? = nil        // Application-specific data.
     }
-    
-    // MARK: Not Support `Extensions` & `Extras` Properties
     
     // MARK: - Properties of glTF itself
     
